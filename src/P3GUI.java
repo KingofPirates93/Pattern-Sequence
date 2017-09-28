@@ -94,7 +94,7 @@ public class P3GUI extends JFrame {
         addWindowListener( EXIT );
             }
 
-    public class WRITEONCLOSE extends WindowAdapter {
+    private class WRITEONCLOSE extends WindowAdapter {
 
         @Override
         public void windowClosing(WindowEvent e) {
