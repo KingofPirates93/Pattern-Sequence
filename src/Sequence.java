@@ -6,24 +6,58 @@
  * Date: 9/25/2017
  */
 
-public class Sequence {
+final class Sequence {
 
     private static int efficiency = 0;
 
 
 
-    public static int computeIterative(int n) {
+    static int computeIterative(int n) {
 
+        efficiency = 0;
         int returnValue = 0;
+
+        if (n == 0) {
+            efficiency++;
+            return 0;
+        } else if (n == 1) {
+            efficiency++;
+            return 1;
+        } else {
+            int last = 1;
+            int secondLast = 0;
+            for (int x = 2; x <= n; x++) {
+                efficiency++;
+                returnValue = ((3 * last) - secondLast);
+                secondLast = last;
+                last = returnValue;
+            }
+        }
         return returnValue;
     }
 
-    public static int computeRecursive(int n) {
-
-        int returnValue = 0;
-        return returnValue;
+    static int computeRecursive(int n) {
+        efficiency = 0;
+        return recursiveCalc(n);
     }
 
-    public static int getEfficiency(){return efficiency;}
+    private static int recursiveCalc(int n) {
+
+        if (n == 0) {
+            efficiency++;
+            return 0;
+        } else if (n == 1) {
+            efficiency++;
+            return 1;
+        } else {
+            int last = 1;
+            int secondLast = 0;
+            efficiency++;
+            return ((3 * recursiveCalc(n - 1) - recursiveCalc(n - 2)));
+        }
+
+    }
+
+    static int getEfficiency(){return efficiency;}
 
 }

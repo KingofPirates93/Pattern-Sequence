@@ -1,22 +1,19 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
-/**
- * Program: Pattern Sequence
- * Package: Default
- * Class: P3GUI
- * PSVM class
- * Author: Swapnil Patel
- * Date: 9/25/2017
- */
+import static java.util.logging.Logger.getLogger;
 
 
-public class P3GUI extends JFrame {
+class P3GUI extends JFrame {
 
     //variable initialization
     //GUI
@@ -32,24 +29,39 @@ public class P3GUI extends JFrame {
     private JLabel INPUTL;
     private JLabel EFF;
     private JLabel B;
-
-
-    //filewriter
-    private FileWriter fileWriter;
-    private File RCWXOUT;
-    private File ITRWXOUT;
-    private File CSVOUT;
-
-    //storage arrays
-    private ArrayList<String> ITRLIST;
-    private ArrayList<String> RCLIST;
-    private ArrayList<String> CSVLIST;
-
     //user input value
     private int userInput;
 
 
-    //GUI interface
+    //constructor
+    private P3GUI() {
+        System.out.println( "calling P3GUI" );
+        createView();
+    }
+
+
+    //main method
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater( () -> {
+            new P3GUI();
+
+        } );
+    }
+
+
+    private int getUserInput() {
+        int USERIN = 0;
+        try {
+            USERIN = Integer.parseInt( INPUT.getText() );
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog( null, "INVALID INPUT, PLEASE ENTER AN INTEGER GREATER THAN 0." );
+        }
+        return USERIN;
+    }
+
+    private void setUserInput() {
+    }
+
     private void createView() {
 
         FRAME = new JFrame( "Almost Fibb" );
@@ -69,6 +81,7 @@ public class P3GUI extends JFrame {
         FRAME.add( PANEL );
         PANEL.setLayout( new GridLayout( 5, 2, 0, 10 ) );
         PANEL.add( ITM );
+        ITM.setSelected( true );
         PANEL.add( RCM );
         PANEL.add( INPUTL );
         PANEL.add( INPUT );
@@ -87,33 +100,77 @@ public class P3GUI extends JFrame {
         FRAME.setVisible( true );
         FRAME.setLocationRelativeTo( null );
         FRAME.setResizable( false );
-        FRAME.setTitle( "Java Sequencing" );
+
+        RCM.addActionListener( e -> {
+            if (RCM.isSelected()) {
+                ITM.setSelected( false );
+                INPUT.setText( "" );
+            }
+        } );
+
+        ITM.addActionListener( e -> {
+            if (ITM.isSelected()) {
+                RCM.setSelected( false );
+                INPUT.setText( "" );
+            }
+        } );
+
+        //compute button
+        COMPUTE.addActionListener( new computeListener() );
+
 
         //write on close.
-        WRITEONCLOSE EXIT = new WRITEONCLOSE();
-        addWindowListener( EXIT );
-            }
+        DOonEXIT EXIT = new DOonEXIT();
+        FRAME.addWindowListener( EXIT );
+    }
 
-    private class WRITEONCLOSE extends WindowAdapter {
+    private class DOonEXIT extends WindowAdapter {
+        private DOonEXIT() {
+            System.out.println( "Calling DO ON EXIT CLASS" );
+        }
 
         @Override
         public void windowClosing(WindowEvent e) {
-            super.windowClosing( e );
+
+            try {
+                int iterativeE;
+                int recursiveE;
+                FileWriter fw = new FileWriter( "OutData.txt" );
+                for (int n = 0; n <= 15; n++) {
+                    Sequence.computeIterative( n );
+                    iterativeE = Sequence.getEfficiency();
+                    Sequence.computeRecursive( n );
+                    recursiveE = Sequence.getEfficiency();
+                    fw.write( n + "," + iterativeE + "," + recursiveE + "\n" );
+                }
+                fw.close();
+            } catch (IOException ex) {
+                getLogger( P3GUI.class.getName() ).log( Level.SEVERE, null, ex );
+            } finally {
+                System.exit( 0 );
+            }
         }
     }
 
+    private class computeListener implements ActionListener {
+        private computeListener() {
+            System.out.println( "Calling COMPUTE LISTENER CLASS" );
+        }
 
-    //constructor
-    private P3GUI() {createView();}
-
-
-    //main method
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater( () -> {
-            P3GUI SQNCE = new P3GUI();
-        } );
-
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setUserInput();
+            if (userInput < 0) {
+                JOptionPane.showMessageDialog( null, "Invalid Input" );
+            } else if (ITM.isSelected()) {
+                DISPLAY.setText( String.valueOf( Sequence.computeIterative( getUserInput() ) ) );
+                EFFDIS.setText( String.valueOf( Sequence.getEfficiency() ) );
+            } else if (RCM.isSelected()) {
+                DISPLAY.setText( String.valueOf( Sequence.computeRecursive( getUserInput() ) ) );
+                EFFDIS.setText( String.valueOf( Sequence.getEfficiency() ) );
+            }
+            INPUT.setText( "" );
+        }
 
     }
-
 }
