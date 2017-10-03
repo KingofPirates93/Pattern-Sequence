@@ -4,10 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 
 import static java.util.logging.Logger.getLogger;
@@ -122,6 +120,10 @@ class P3GUI extends JFrame {
         //write on close.
         DOonEXIT EXIT = new DOonEXIT();
         FRAME.addWindowListener( EXIT );
+    }
+
+    public void setUserInput(int userInput) {
+        this.userInput = userInput;
     }
 
     private class DOonEXIT extends WindowAdapter {
